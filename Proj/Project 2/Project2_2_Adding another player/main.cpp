@@ -24,9 +24,10 @@ using namespace std;
 void dplTble(const char [][3]);
 float playGme(string,int&);
 void playGme(int);
+bool win(char[][3],int);
 void bbleSort(vector<int>&, int);
 void selSort(float [],string[], int);
-int bnrSrch(const float [], int);
+int rnkSrch(const string [], int, string);
 
 //Execution Begins Here!
 int main(int argc, char** argv) {
@@ -103,17 +104,15 @@ float playGme(string plyer,int &atmpSum){
             rounds;     //3 rounds in total
     float atmpAvg;    //average number of attempts it takes for player to succeed per round
     string enemy;      //name player set for the program as enemy
-    bool win;           //true if player guess correctly, false otherwise
         cout<<endl<<"          The rule is simple"<<endl;
-        cout<<"Find out where I am hiding in the board below"<<endl
-                <<"             And you win!                      "<<endl<<endl;
+        cout<<"Find out where I am hiding in the board below"<<endl<<endl;
         ofstream outputFile(plyer);
         atmpSum=0;
         //start game from round 1->3
         for(rounds=0;rounds<3;rounds++){
             char table[ROWS][COLS]={{'1','2','3'},{'4','5','6'},{'7','8','9'}};   //game's board
             hide=(rand()%9)+1; //generate a random number as hiding slot
-            win=0,attmps=0,temp=0;
+            attmps=0,temp=0;
             //display table
             dplTble(table);
             cout<<"Round "<<rounds+1<<endl;
@@ -129,7 +128,6 @@ float playGme(string plyer,int &atmpSum){
                     case 1:{
                         if(choice==hide)
                         {
-                            win=1;
                             table[0][0]='0';
                             //display updated table
                             dplTble(table);
@@ -145,7 +143,6 @@ float playGme(string plyer,int &atmpSum){
                 case 2:{
                     if(choice==hide)
                         {
-                            win=1;
                             table[0][1]='0';
                             dplTble(table);
                             break;
@@ -159,7 +156,6 @@ float playGme(string plyer,int &atmpSum){
                 case 3:{
                     if(choice==hide)
                         {
-                            win=1;
                             table[0][2]='0';
                             dplTble(table);
                             break;
@@ -172,8 +168,7 @@ float playGme(string plyer,int &atmpSum){
                 }
                 case 4:{
                     if(choice==hide)
-                        {
-                        win=1;    
+                        { 
                         table[1][0]='0';
                             dplTble(table);
                             break;
@@ -187,7 +182,6 @@ float playGme(string plyer,int &atmpSum){
                 case 5:{
                     if(choice==hide)
                         {
-                            win=1;  
                             table[1][1]='0';
                             dplTble(table);
                             break;
@@ -201,7 +195,6 @@ float playGme(string plyer,int &atmpSum){
                 case 6:{
                     if(choice==hide)
                         {
-                            win=1;
                             table[1][2]='0';
                             dplTble(table);
                             break;
@@ -215,7 +208,6 @@ float playGme(string plyer,int &atmpSum){
                 case 7:{
                     if(choice==hide)
                         {
-                            win=1;
                             table[2][0]='0';
                             dplTble(table);
                             break;
@@ -229,7 +221,6 @@ float playGme(string plyer,int &atmpSum){
                 case 8:{
                     if(choice==hide)
                         {
-                            win=1;
                             table[2][1]='0';
                             dplTble(table);
                             break;
@@ -243,7 +234,6 @@ float playGme(string plyer,int &atmpSum){
                 case 9:{
                     if(choice==hide)
                         {
-                            win=1;
                             table[2][2]='0';
                             dplTble(table);
                             break;
@@ -257,7 +247,7 @@ float playGme(string plyer,int &atmpSum){
                 }
                 }
             }while(choice!=hide);
-            if(win==1){
+            if(win(table,COLS)==true){
             cout<<"Success!"<<endl;
             cout<<"It took you "<<attmps<<" attempts in round "<<rounds+1<<endl;
             }
@@ -275,14 +265,29 @@ float playGme(string plyer,int &atmpSum){
         cout<<plyer<<" take an average "<<atmpAvg<<" attempts to finish the game."<<endl<<endl;
         return atmpAvg;
 }
+//check for winning status
+bool win(char table[][3],int cols){
+    for(int i=0;i<3;i++){
+        for(int j=0;j<cols;j++){
+            if(table[i][j]=='0')
+                return true;
+        }
+    }
+    return false;
+}
 //Multiplayer game
 void playGme(int numPlyr=1){
-    string plyer;           //player's name
+    string plyer,           //player's name
+            nmeSrch;        //player's name to search for rank
     int atmpSum;            //sum of player attempts after 3 rounds
     float atmpAvg;          //average attempts to finish 3 rounds
     string names[numPlyr];  //players ' names array
-    float avg[numPlyr]; //and their average attempts
-    vector<int>sum;       //player's attempts total array
+    float avg[numPlyr];     //and their average attempts
+    vector<int>sum;         //player's attempts total array
+    char search,            //whether player wants to search for their rank
+            again;          //search again? yes or no
+    int rank;               //player's rank
+    //perform game until last player is done and fill in names, total score and avg score
     for(int i=0;i<numPlyr;i++){
         cout<<"Player number "<<i+1<<"'s name: ";
         cin>>plyer;
@@ -295,12 +300,37 @@ void playGme(int numPlyr=1){
     bbleSort(sum,sum.size());
     selSort(avg,names,numPlyr);
     //Display the ranking board
-    cout<<" Rank|     Name     |Total Attempts|    Average   "<<endl;
+    cout<<endl<<" Rank|     Name     |Total Attempts|    Average   "<<endl;
     for(int i=0;i<numPlyr;i++){
         cout<<setw(5)<<i+1<<"|"<<setw(14)<<names[i]<<"|"
                 <<setw(14)<<sum[i]<<"|"
                 <<setw(14)<<avg[i]<<endl;
     }
+    //Prompt user for rank search
+    cout<<endl<<"Would you like to search for your rank(y or n) : ";
+    cin>>search;
+    //Input validation
+    while(search!='y'&&search!='n'&&search!='Y'&&search!='N'){
+        cout<<"Invalid choice. Try again (y or n): ";
+        cin>>search;
+    }
+    do{
+        cout<<"Name: ";
+        cin>>nmeSrch;
+        rank=rnkSrch(names,numPlyr,nmeSrch);
+        if(rank==-1)
+            cout<<"Invalid name."<<endl;
+        else
+            cout<<nmeSrch<<"'s rank is "<<rank+1<<endl;
+        cout<<"Again(y or n)? ";
+        cin>>again;
+        //Input validation
+        while(again!='y'&&again!='n'&&again!='Y'&&again!='N'){
+            cout<<"Invalid choice. Try again (y or n): ";
+            cin>>again;
+        }
+    }while(again!='n'&&again!='N'); //repeat until player enter no to repeat
+    cout<<endl<<endl;
 }
 //Bubble sort on a vector
 void bbleSort(vector<int>&num, int size){
@@ -337,4 +367,19 @@ void selSort(float avg[],string names[], int size){
         names[minIndx]=names[start];
         names[start]=strTemp;
     }
+}
+//search for player's name to find out their rank using linear search
+int rnkSrch(const string arr[], int size, string name){
+    int index=0;
+    int pos=-1;
+    bool found=false;
+    while(index<size&&!found){
+        if(arr[index]==name)
+        {
+            found=true;
+            pos=index;
+        }
+        index++;
+    }
+    return pos;
 }
