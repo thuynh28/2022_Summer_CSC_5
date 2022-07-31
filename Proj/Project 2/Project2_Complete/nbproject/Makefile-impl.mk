@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=Project2_2_Adding another player
+PROJECTNAME=Project2_Complete
 
 # Active Configuration
 DEFAULTCONF=Debug

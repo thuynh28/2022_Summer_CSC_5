@@ -1,7 +1,7 @@
 /* 
  * File:   main.cpp
  * Author: Triet Huynh
- * Created on July 20th, 2022, 10:30 AM
+ * Created on July 30th, 2022, 10:30 AM
  * Purpose: Project 1_Simple Hide and Seek game in a 9 slots board for 1 player
  */
 
@@ -42,8 +42,7 @@ int main(int argc, char** argv) {
             atmpSum;    //Sum of attempts that player takes to finish the game
     char start;         //user choice to start or quit the game
     float atmpAvg;    //average number of attempts it takes for player to succeed per round
-    string plyer,       //player's name
-            enemy;      //name player set for the program as enemy
+    string plyer;       //player's name
     bool win;           //true if player guess correctly, false otherwise
     
     //Initialize or input i.e. set variable values
@@ -70,12 +69,12 @@ int main(int argc, char** argv) {
             cout<<"Input number of players: ";
             cin>>numPlyer;
             playGme(numPlyer);
-        }   
     }else if(start=='n'||start=='N'){   //quits game
         cout<<"Exiting. See ya later!"<<endl<<endl;
         exit(0);
     }else{                              //invalid input
         cout<<"Invalid choice! Please try again."<<endl<<endl;
+        }   
     } 
     }while(start!='n'&&start!='N');
     //Exit stage right or left!
@@ -103,7 +102,6 @@ float playGme(string plyer,int &atmpSum){
             temp,       //temporary value to hold number of attempts in each round
             rounds;     //3 rounds in total
     float atmpAvg;    //average number of attempts it takes for player to succeed per round
-    string enemy;      //name player set for the program as enemy
         cout<<endl<<"          The rule is simple"<<endl;
         cout<<"Find out where I am hiding in the board below"<<endl<<endl;
         ofstream outputFile(plyer);
@@ -260,7 +258,7 @@ float playGme(string plyer,int &atmpSum){
             atmpSum+=temp;
         }
         inputFile.close();
-        atmpAvg=static_cast<float>(atmpSum)/3.0;
+        atmpAvg=abs(static_cast<float>(atmpSum)/3.0);
         cout<<fixed<<showpoint<<setprecision(2);
         cout<<plyer<<" take an average "<<atmpAvg<<" attempts to finish the game."<<endl<<endl;
         return atmpAvg;
